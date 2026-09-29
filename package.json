@@ -1,0 +1,27 @@
+{
+  "name": "adopt-cline",
+  "version": "1.0.0",
+  "description": "Multi-stack CLI tool to adopt pluggable Cline agent rules, workflows, and memory-bank into any project (C#, PHP, Dart, Python, Rust, Go, JS/TS, etc.)",
+  "type": "module",
+  "bin": {
+    "adopt-cline": "./bin/cli.js"
+  },
+  "scripts": {
+    "start": "node bin/cli.js",
+    "test": "node test/cli.test.js"
+  },
+  "files": [
+    "bin",
+    ".cline",
+    "README.md"
+  ],
+  "keywords": [
+    "cline",
+    "ai-agent",
+    "agent-spec",
+    "memory-bank",
+    "developer-tools",
+    "ai-coding"
+  ],
+  "license": "MIT"
+}

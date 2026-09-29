@@ -1,0 +1,107 @@
+{
+  "$schema": "https://agent-spec.local/schemas/spec.v1.schema.json",
+  "name": "{{ADAPTER_NAME}}",
+  "version": "2.0.0",
+  "description": "Pluggable, project-agnostic Cline adapter. This file is the SINGLE SOURCE OF TRUTH for per-project facts. To use it in any new project: copy this .cline/ folder into the project root, then edit only the 'projectConfig' block below (name, stack, layer paths, commands, gates, constraints). The .cline/rules, .cline/workflows, and .cline/memory-bank markdown are generic templates that resolve their specifics from this file — do not hand-edit them per project except to add genuinely project-specific patterns.",
+  "_setup": {
+    "how": "1) Copy this .cline/ folder into any project root. 2) Edit projectConfig.projectName, targetEnvironment, layerPaths, constraints, commands, and verificationGates below. 3) Run the 'update memory bank' trigger on first session to re-seed the generic memory-bank templates with this project's real facts. See .cline/README.md for a walkthrough.",
+    "placeholdersToReplace": ["{{PROJECT_NAME}}", "{{FRAMEWORK}}", "{{DOMAIN_LAYER_PATH}}", "{{PRESENTATION_LAYER_PATH}}", "{{ROUTES_PATH}}", "{{STYLES_PATH}}", "{{TEST_SETUP_PATH}}", "{{TEST_CMD}}", "{{TYPECHECK_CMD}}", "{{LINT_CMD}}", "{{FORMAT_CMD}}", "{{BUILD_CMD}}"]
+  },
+  "projectConfig": {
+    "projectName": "{{PROJECT_NAME}}",
+    "description": "One-line description of what this project is and does.",
+    "targetEnvironment": {
+      "platform": "cross-platform (win32 reference dev env)",
+      "framework": "{{FRAMEWORK}}",
+      "bundler": "{{BUNDLER}}",
+      "styling": "{{STYLING}}",
+      "testing": "{{TESTING}}",
+      "packageManager": "npm"
+    },
+    "layerPaths": {
+      "domainLayer": "{{DOMAIN_LAYER_PATH}}",
+      "presentationLayer": "{{PRESENTATION_LAYER_PATH}}",
+      "routes": "{{ROUTES_PATH}}",
+      "styles": "{{STYLES_PATH}}",
+      "testSetup": "{{TEST_SETUP_PATH}}"
+    },
+    "constraints": {
+      "pureDomainDecoupling": {
+        "enabled": true,
+        "path": "{{DOMAIN_LAYER_PATH}}",
+        "rule": "This layer must remain 100% pure (no UI/framework/DOM imports). If a change seems to need a UI import, that logic belongs in the presentation layer.",
+        "_note": "Set enabled:false if your project has no such boundary."
+      },
+      "hiddenInformation": {
+        "enabled": false,
+        "paths": [],
+        "rule": "If your project has hidden/internal/private state that must never leak to the outside, document the invariant here (what is hidden, under what viewer/context it may be revealed) and forbid any debug path that exposes it during active use.",
+        "_note": "Optional. Example from a hidden-information game: 'opponent piece ranks must never be revealed during active play'."
+      },
+      "aiFairness": {
+        "enabled": false,
+        "rule": "If an AI/automated agent exists, it must derive decisions only from public/belief-derived inputs, never direct reads of hidden state.",
+        "_note": "Optional. Only relevant if the project contains an AI/opponent."
+      },
+      "styling": {
+        "enabled": true,
+        "rule": "Use semantic theme tokens from {{STYLES_PATH}}; no hardcoded hex or arbitrary-value classes.",
+        "allowedTokens": [],
+        "prohibited": "arbitrary value classes like bg-[#1a1a1a] or text-[#ffffff]",
+        "_note": "Fill allowedTokens with this project's semantic token names."
+      },
+      "gitHistory": {
+        "rule": "Never force-push or rebase published commits. If the repo syncs with an external service (e.g. Lovable), ask before rewriting history."
+      },
+      "additionalConstraints": [
+        "Add any project-specific hard invariants here (business rules, data invariants, architecture boundaries). Markdown rules reference this list."
+      ]
+    },
+    "commands": {
+      "test": "{{TEST_CMD}}",
+      "testDomain": "{{TEST_DOMAIN_CMD}}",
+      "testPresentation": "{{TEST_PRESENTATION_CMD}}",
+      "typecheck": "{{TYPECHECK_CMD}}",
+      "lint": "{{LINT_CMD}}",
+      "format": "{{FORMAT_CMD}}",
+      "build": "{{BUILD_CMD}}",
+      "dev": "{{DEV_CMD}}",
+      "preview": "{{PREVIEW_CMD}}"
+    },
+    "verificationGates": {
+      "afterDomainLayerChange": ["testDomain", "typecheck"],
+      "afterPresentationChange": ["format", "lint", "typecheck"],
+      "beforeRelease": ["test", "typecheck", "build"]
+    }
+  },
+  "memoryBank": {
+    "path": "memory-bank/",
+    "files": ["projectbrief.md", "productContext.md", "systemPatterns.md", "techContext.md", "activeContext.md", "progress.md"],
+    "triggerPhrases": {
+      "read": "follow your custom instructions",
+      "fullUpdate": "update memory bank"
+    },
+    "note": "Standard Cline Memory Bank pattern (docs.cline.bot/best-practices/memory-bank). activeContext.md and progress.md are the volatile files — update every real session. projectbrief/productContext/systemPatterns/techContext change rarely."
+  },
+  "rulesIndex": {
+    "alwaysOn": [
+      ".cline/rules/00-agent-spec.md",
+      ".cline/rules/05-memory-bank.md",
+      ".cline/rules/10-anti-hallucination.md",
+      ".cline/rules/50-project-facts.md"
+    ],
+    "toggleOneAtATime": {
+      "brainstorm": ".cline/rules/20-mode-brainstorm.md",
+      "document": ".cline/rules/20-mode-document.md",
+      "code": ".cline/rules/20-mode-code.md",
+      "weeklyReview": ".cline/rules/20-mode-weekly-review.md"
+    },
+    "note": "Enable exactly one mode file at a time in the Cline rules toggle UI, alongside the always-on baseline. weeklyReview is intended for once-per-week use only."
+  },
+  "workflows": [
+    ".cline/workflows/run-tests.md",
+    ".cline/workflows/build-and-preview.md",
+    ".cline/workflows/domain-layer.md",
+    ".cline/workflows/presentation-layer.md"
+  ]
+}
